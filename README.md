@@ -25,6 +25,7 @@ The primary goal of this project is to create a user-friendly time management ap
 ## Target Audience
 
 This time management application caters to the following audience segments:
+
 - Event Organizers and Planners
 - Educational Institutions (Schools, Colleges, Academic events, Students organizations, etc.)
 - Anyone seeking to better organize their timetable or interested in trying out an efficient time management application
