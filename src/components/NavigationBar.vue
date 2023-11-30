@@ -10,7 +10,7 @@ import {
 
 <template>
   <v-layout class="overflow-visible" style="height: 56px">
-    <v-bottom-navigation grow v-model="value" color="primary" horizontal>
+    <v-bottom-navigation grow color="primary" horizontal>
       <v-btn>
         <RouterLink to="/">
           <v-icon color="success" size="x-large" :icon="mdiHomeCircle"></v-icon>
