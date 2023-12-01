@@ -7,7 +7,6 @@ export default {
     ...mapState(useEventStore, ["getEventTypes", "getEvents"]),
     eventTypes: {
       get() {
-        console.log("here123");
         return this.getEventTypes;
       },
     },
@@ -31,7 +30,7 @@ export default {
           :color="event.color"
           class="d-flex justify-center align-center pa-1 ma-1"
         >
-          {{ event.name }}
+          <p class="font-weight-bold">{{ event.name }}</p>
         </v-sheet>
       </v-col>
     </v-row>
