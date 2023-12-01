@@ -4,13 +4,17 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <v-container fluid class="bg-surface-variant fill-height">
+  <v-container fluid class="flex-column bg-surface-variant fill-height">
     <RouterView />
     <NavigationBar />
   </v-container>
 </template>
 
 <style scoped>
+.flex-column {
+  flex-direction: column;
+}
+
 nav {
   width: 100%;
   font-size: 12px;
