@@ -31,22 +31,35 @@ export default {
     <div class="container mt-16 ml-16">
       <v-row class="ma-0 pa-0">
         <v-col class="pa-0" v-for="(day, index) in daysOfWeek" :key="index">
-          <v-sheet color="green-lighten-3" :height="20">{{ day }}</v-sheet>
+          <v-sheet
+            class="d-flex justify-center align-center"
+            color="green-lighten-3"
+            :height="30"
+          >
+            <p class="font-weight-black">{{ day }}</p>
+          </v-sheet>
         </v-col>
       </v-row>
+
       <v-row
         class="ma-0 pa-0"
         v-for="rowIndex in 11"
         :key="rowIndex"
-        align="start"
+        align="center"
       >
         <v-col class="pa-0">
-          <v-sheet color="grey-lighten-3" :height="40">
-            {{ getTimeForRow(rowIndex) }}
+          <v-sheet
+            class="d-flex justify-center align-center font-weight-bold"
+            color="grey-lighten-3"
+            :height="40"
+          >
+            ⏳ {{ getTimeForRow(rowIndex) }}
           </v-sheet>
         </v-col>
         <v-col class="pa-0" v-for="n in 7" :key="n">
-          <v-sheet :height="40">Empty</v-sheet>
+          <v-sheet class="d-flex justify-center align-center" :height="40">
+            <p>Empty</p>
+          </v-sheet>
         </v-col>
       </v-row>
     </div>
