@@ -1,6 +1,8 @@
 <script>
 import { mapState } from "pinia";
 import { useEventStore } from "../stores/event.js";
+import db from "../../firebase/init.js";
+import { collection, addDoc } from "firebase/firestore"; 
 
 export default {
   data() {
@@ -50,6 +52,32 @@ export default {
       range: [0, 24],
     };
   },
+  methods: {
+    async submitForm() {
+      const eventName = this.eventName;
+      const selectedEvents = this.events.filter(event => event.selected);
+      const timeRange = this.range;
+
+      const eventData = {
+        name: eventName,
+        selectedEvents,
+        timeRange,
+      };
+
+      try {
+        const docRef = await addDoc(collection(db, "Task"), eventData);
+        console.log("Submitted");
+        this.resetForm();
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+    },
+    resetForm() {
+      this.eventName = "";
+      this.range = [0, 24];
+      this.events.forEach(event => (event.selected = false));
+    },
+  },
 };
 </script>
 
@@ -57,8 +85,8 @@ export default {
   <h1>Create Task Page</h1>
   <v-sheet rounded class="pa-6 ma-4" width="600">
     <v-sheet rounded width="500" class="mx-auto transparent-sheet">
-      <v-form @submit.prevent>
-        <v-text-field label="Event name"></v-text-field>
+      <v-form @submit.prevent="submitForm">
+        <v-text-field label="Event name" v-model="eventName"></v-text-field>
 
         <v-range-slider
           v-model="range"
@@ -110,7 +138,7 @@ export default {
         </v-row>
 
         <v-sheet rounded width="100" class="mx-auto transparent-sheet">
-          <v-btn variant="outlined" type="submit" block class="mt-2">
+          <v-btn @click="submitForm" variant="outlined" type="submit" block class="mt-2">
             Submit
           </v-btn>
         </v-sheet>
