@@ -1,6 +1,8 @@
 <script>
 import { mapState } from "pinia";
 import { useEventStore } from "../stores/event.js";
+import { collection, addDoc } from "firebase/firestore"; 
+import db from "../../Firebase/init.js"
 
 export default {
   data() {
@@ -51,6 +53,26 @@ export default {
       range: [0, 24],
     };
   },
+  methods: {
+    async submitForm() {
+      const eventData = {
+        eventName: this.eventName,
+        eventTime: this.range,
+        events: this.events.filter(event => event.selected)
+      }
+      try {
+        const docRef = await addDoc(collection(db, "Task"), eventData);
+        this.resetForm();
+      } catch (error) {
+        console.error("Error adding documents: ", error);
+      }
+    },
+    resetForm(){
+      this.eventName = "";
+      this.eventTime = [0, 24];
+      this.events.forEach(event => (event.selected = false));
+    }
+  }
 };
 </script>
 
@@ -58,7 +80,7 @@ export default {
   <h1>Create Task Page</h1>
   <v-sheet rounded class="pa-6 ma-4" width="600">
     <v-sheet rounded width="500" class="mx-auto transparent-sheet">
-      <v-form @submit.prevent>
+      <v-form @submit.prevent="submitForm">
         <v-text-field v-model="eventName" label="Event name"></v-text-field>
 
         <v-range-slider
