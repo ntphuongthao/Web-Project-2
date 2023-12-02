@@ -5,6 +5,8 @@ import { useEventStore } from "../stores/event.js";
 export default {
   data() {
     return {
+      eventName: "",
+      eventTime: null,
       events: [
         {
           name: "Birthday",
@@ -47,7 +49,6 @@ export default {
           color: "#FFD8B1",
         },
       ],
-      range: [0, 24],
     };
   },
 };
@@ -58,10 +59,10 @@ export default {
   <v-sheet rounded class="pa-6 ma-4" width="600">
     <v-sheet rounded width="500" class="mx-auto transparent-sheet">
       <v-form @submit.prevent>
-        <v-text-field label="Event name"></v-text-field>
+        <v-text-field v-model="eventName" label="Event name"></v-text-field>
 
         <v-range-slider
-          v-model="range"
+          v-model="eventTime"
           :max="24"
           :min="0"
           :step="2"
