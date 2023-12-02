@@ -6,7 +6,6 @@ export default {
   data() {
     return {
       eventName: "",
-      eventTime: null,
       events: [
         {
           name: "Birthday",
@@ -49,6 +48,7 @@ export default {
           color: "#FFD8B1",
         },
       ],
+      range: [0, 24],
     };
   },
 };
@@ -62,7 +62,7 @@ export default {
         <v-text-field v-model="eventName" label="Event name"></v-text-field>
 
         <v-range-slider
-          v-model="eventTime"
+          v-model="range"
           :max="24"
           :min="0"
           :step="2"
