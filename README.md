@@ -8,6 +8,24 @@ Welcome to the Time Management App repository! This project aims to develop a ro
 
 The primary goal of this project is to create a user-friendly time management application catering to a wide audience. By focusing on UI golden rules for general audiences, our aim is to design an application that meets the diverse needs of users, providing efficient event management tools in a straightforward and intuitive manner.
 
+## Installation
+
+To install and run this application locally, follow these steps:
+
+### 1. Clone the Repository
+
+Clone this repository to your local machine using the following command:
+
+```
+git clone git@github.com:ntphuongthao/Web-Project-2.git
+```
+
+### 2. Install the Dependencies and Start development server
+
+```
+npm install && npm run dev
+```
+
 ## Key Features
 
 - **Event Creation:** Create events with details such as Name, week day, time, isImportant, and event type selection.
