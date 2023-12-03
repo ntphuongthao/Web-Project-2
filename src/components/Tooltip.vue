@@ -28,7 +28,7 @@ export default {
           border
           :elevation="4"
           :color="event.color"
-          class="d-flex justify-center align-center pa-1 ma-1"
+          class="d-flex justify-center align-center pa-1 ma-2"
         >
           <p class="font-weight-bold">{{ event.name }}</p>
         </v-sheet>

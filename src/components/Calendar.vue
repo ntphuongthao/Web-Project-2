@@ -61,7 +61,7 @@ export default {
         const { eventTime, eventDay } = event;
         const startTime = Math.floor(eventTime[0] / 2) + 1;
         const endTime = Math.floor(eventTime[1] / 2);
-        console.log(startTime, endTime);
+
         // Map day to its index (Monday=0, Tuesday=1, ..., Sunday=6)
         let days = this.daysOfWeek.slice(1);
         let dayIndex = days.indexOf(eventDay);
@@ -92,7 +92,7 @@ export default {
         <v-sheet
           class="d-flex justify-center align-center"
           color="green-lighten-3"
-          :height="30"
+          :height="36"
         >
           <p class="font-weight-black">{{ day }}</p>
         </v-sheet>
@@ -109,21 +109,21 @@ export default {
         <v-sheet
           class="d-flex justify-center align-center font-weight-bold"
           color="grey-lighten-3"
-          :height="40"
+          :height="36"
         >
           ⏳ {{ getTimeForRow(rowIndex) }}
         </v-sheet>
       </v-col>
 
       <v-col
-        class="pa-0 ml-2"
+        class="pa-0"
         v-for="(dayIndex, day) in daysOfWeek.slice(1)"
         :key="dayIndex"
       >
         <v-sheet
           v-if="hasEvent(day, rowIndex)"
           :color="getEventColor(day, rowIndex)"
-          :height="40"
+          :height="36"
         >
           <p class="eventName d-flex justify-center align-center">
             <span

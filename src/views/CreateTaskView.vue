@@ -1,5 +1,5 @@
 <script>
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, onSnapshot } from "firebase/firestore";
 import db from "../../firebase/init.js";
 
 export default {
@@ -7,7 +7,7 @@ export default {
     return {
       eventDay: null,
       eventName: null,
-      events: [
+      eventTypes: [
         {
           name: "Birthday",
           selected: false,
@@ -50,6 +50,7 @@ export default {
         },
       ],
       range: [0, 24],
+      events: [],
     };
   },
   methods: {
@@ -58,10 +59,32 @@ export default {
         eventDay: this.eventDay,
         eventName: this.eventName,
         eventTime: this.range,
-        events: this.events.filter((event) => event.selected),
+        events: this.eventTypes.filter((event) => event.selected),
       };
+
+      const [eventStartTime, eventEndTime] = this.range; // [a, b]
+
+      // Get all events from that chosen day
+      const sameDayEvents = this.events.filter(
+        (event) => event.eventDay === this.eventDay
+      );
+      let isTimeOverlap = false;
+
+      for (const event of sameDayEvents) {
+        const [startTime, endTime] = event.eventTime; // [c, d]
+        if (startTime < eventEndTime && eventStartTime < endTime) {
+          isTimeOverlap = true;
+          break;
+        }
+      }
+
+      if (isTimeOverlap) {
+        alert("You have other events in this time range!");
+        return;
+      }
+
       try {
-        const docRef = await addDoc(collection(db, "Task"), eventData);
+        await addDoc(collection(db, "Task"), eventData);
         alert("You have successfully created a new event!");
         this.resetForm();
       } catch (error) {
@@ -72,14 +95,21 @@ export default {
       this.eventDay = null;
       this.eventName = null;
       this.range = [0, 24];
-      this.events.forEach((event) => (event.selected = false));
+      this.eventTypes.forEach((event) => (event.selected = false));
     },
+  },
+  mounted() {
+    onSnapshot(collection(db, "Task"), (querySnapshot) => {
+      querySnapshot.forEach((task) => {
+        this.events.push({ id: task.id, ...task.data() });
+      });
+    });
   },
 };
 </script>
 
 <template>
-  <h1>Create Task Page</h1>
+  <h1>Create a new Task</h1>
   <v-sheet rounded class="pa-6 ma-4" width="600">
     <v-sheet rounded width="500" class="mx-auto transparent-sheet">
       <v-form @submit.prevent="submitForm">
@@ -132,16 +162,16 @@ export default {
 
         <v-row class="mt-3">
           <v-col
-            v-for="(event, index) in events"
-            :key="event"
+            v-for="(eventType, index) in eventTypes"
+            :key="eventType"
             cols="12"
             sm="4"
             md="4"
           >
             <v-checkbox
-              v-model="events[index].selected"
-              :label="events[index].name"
-              :color="events[index].color"
+              v-model="eventTypes[index].selected"
+              :label="eventTypes[index].name"
+              :color="eventTypes[index].color"
               hide-details
             ></v-checkbox>
           </v-col>

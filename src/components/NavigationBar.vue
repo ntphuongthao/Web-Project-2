@@ -13,13 +13,6 @@ import {
     <v-bottom-navigation grow color="primary" horizontal>
       <v-btn>
         <RouterLink to="/">
-          <v-icon color="success" size="x-large" :icon="mdiHomeCircle"></v-icon>
-          <p>Home</p>
-        </RouterLink>
-      </v-btn>
-
-      <v-btn>
-        <RouterLink to="/about">
           <div>
             <v-icon
               color="success"
@@ -27,7 +20,7 @@ import {
               :icon="mdiInformation"
             ></v-icon>
           </div>
-          <p>About</p>
+          <p>Home</p>
         </RouterLink>
       </v-btn>
 
