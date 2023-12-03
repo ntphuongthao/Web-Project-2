@@ -65,6 +65,9 @@ export default {
       await deleteDoc(doc(db, "Task", this.grid[rowIndex][day].id));
       location.reload();
     },
+    isImportantEvent(day, rowIndex) {
+      return this.grid[rowIndex][day].isImportant;
+    },
     markBusyCells() {
       for (let event of this.events) {
         const { eventTime, eventDay } = event;
@@ -158,6 +161,14 @@ export default {
               @click="deleteEvent(day, rowIndex)"
               >❌</span
             >
+            <span
+              v-if="
+                this.isStartCell(day, rowIndex) &&
+                this.isImportantEvent(day, rowIndex)
+              "
+              class="importantEvent"
+              >⭐️</span
+            >
             {{ getEventName(day, rowIndex) }}
           </p>
         </v-sheet>
@@ -184,6 +195,7 @@ export default {
 .fixBorderTopRight {
   border-top-right-radius: 0.5rem;
 }
+
 .fixBorderBottomLeft {
   border-bottom-left-radius: 0.5rem;
 }
@@ -206,6 +218,13 @@ export default {
 .endCell {
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
+}
+
+.importantEvent {
+  position: absolute;
+  font-size: 24px;
+  left: -12px;
+  top: -1rem;
 }
 
 .cross {
