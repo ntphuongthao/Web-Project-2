@@ -62,6 +62,7 @@ export default {
       };
       try {
         const docRef = await addDoc(collection(db, "Task"), eventData);
+        alert("You have successfully created a new event!");
         this.resetForm();
       } catch (error) {
         console.error("Error adding documents: ", error);

@@ -1,6 +1,6 @@
 <script>
 import db from "../../firebase/init.js";
-import { collection, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, deleteDoc } from "firebase/firestore";
 
 export default {
   data() {
@@ -17,8 +17,9 @@ export default {
         "Sunday",
       ],
       grid: Array.from({ length: 13 }, () =>
-        Array.from({ length: 8 }, () => 0)
+        Array.from({ length: 8 }, () => null)
       ),
+      startCells: [],
     };
   },
   methods: {
@@ -30,7 +31,30 @@ export default {
       return `${startHour}:00 => ${endHour}:00`;
     },
     hasEvent(day, rowIndex) {
-      return this.grid[rowIndex][day];
+      return this.grid[rowIndex][day] !== null;
+    },
+    getEventName(day, rowIndex) {
+      return this.grid[rowIndex][day].eventName;
+    },
+    getEventColor(day, rowIndex) {
+      const eventList = this.grid[rowIndex][day].events;
+      if (eventList.length === 0) {
+        return "fff";
+      } else {
+        return eventList[0].color;
+      }
+    },
+    isStartCell(day, rowIndex) {
+      let days = this.daysOfWeek.slice(1);
+      const searchCell = [days[day], rowIndex - 1];
+      const isInArray = this.startCells.some(
+        (item) => JSON.stringify(item) === JSON.stringify(searchCell)
+      );
+      return isInArray;
+    },
+    async deleteEvent(day, rowIndex) {
+      await deleteDoc(doc(db, "Task", this.grid[rowIndex][day].id));
+      location.reload();
     },
     markBusyCells() {
       for (let event of this.events) {
@@ -42,18 +66,18 @@ export default {
         let days = this.daysOfWeek.slice(1);
         let dayIndex = days.indexOf(eventDay);
 
+        this.startCells.push([eventDay, startTime]);
         // Mark cells as busy
         for (let i = startTime; i <= endTime; i++) {
-          this.grid[i][dayIndex] = 1;
+          this.grid[i][dayIndex] = event;
         }
       }
-      console.log("testing hereeeee", this.grid);
     },
   },
   mounted() {
     onSnapshot(collection(db, "Task"), (querySnapshot) => {
       querySnapshot.forEach((task) => {
-        this.events.push(task.data());
+        this.events.push({ id: task.id, ...task.data() });
       });
       this.markBusyCells();
     });
@@ -91,17 +115,28 @@ export default {
         </v-sheet>
       </v-col>
 
-      <v-col class="pa-0" v-for="(dayIndex, day) in daysOfWeek" :key="dayIndex">
-        <v-sheet class="d-flex justify-center align-center" :height="40">
-          <!-- Check if there is an event on the specific day and time -->
-          <template v-if="hasEvent(day, rowIndex)">
-            <!-- Display the event representation -->
-            <p>Event!</p>
-          </template>
-          <template v-else>
-            <!-- If no event, display empty -->
-            <p>🆓</p>
-          </template>
+      <v-col
+        class="pa-0"
+        v-for="(dayIndex, day) in daysOfWeek.slice(1)"
+        :key="dayIndex"
+      >
+        <v-sheet
+          v-if="hasEvent(day, rowIndex)"
+          :color="getEventColor(day, rowIndex)"
+          :height="40"
+        >
+          <p class="eventName d-flex justify-center align-center">
+            <span
+              v-if="this.isStartCell(day, rowIndex)"
+              class="cross"
+              @click="deleteEvent(day, rowIndex)"
+              >❌</span
+            >
+            {{ getEventName(day, rowIndex) }}
+          </p>
+        </v-sheet>
+        <v-sheet v-else>
+          <p class="d-flex justify-center align-center">🆓</p>
         </v-sheet>
       </v-col>
     </v-row>
@@ -112,5 +147,22 @@ export default {
 .container {
   margin: 2rem;
   margin-top: 1rem;
+}
+
+.eventName {
+  font-size: 12px;
+  height: 100%;
+  position: relative;
+}
+
+.cross {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  width: 20px;
+  border: 1px solid black;
+  text-align: center;
+  right: -8px;
+  top: -8px;
 }
 </style>
