@@ -1,7 +1,11 @@
 <script>
+import db from "../../firebase/init.js";
+import { collection, onSnapshot } from "firebase/firestore";
+
 export default {
   data() {
     return {
+      events: [],
       daysOfWeek: [
         "",
         "Monday",
@@ -12,6 +16,9 @@ export default {
         "Saturday",
         "Sunday",
       ],
+      grid: Array.from({ length: 13 }, () =>
+        Array.from({ length: 8 }, () => 0)
+      ),
     };
   },
   methods: {
@@ -22,6 +29,34 @@ export default {
       const endHour = String(hour + 2).padStart(2, "0");
       return `${startHour}:00 => ${endHour}:00`;
     },
+    hasEvent(day, rowIndex) {
+      return this.grid[rowIndex][day];
+    },
+    markBusyCells() {
+      for (let event of this.events) {
+        const { eventTime, eventDay } = event;
+        const startTime = Math.floor(eventTime[0] / 2);
+        const endTime = Math.floor(eventTime[1] / 2);
+
+        // Map day to its index (Monday=0, Tuesday=1, ..., Sunday=6)
+        let days = this.daysOfWeek.slice(1);
+        let dayIndex = days.indexOf(eventDay);
+
+        // Mark cells as busy
+        for (let i = startTime; i <= endTime; i++) {
+          this.grid[i][dayIndex] = 1;
+        }
+      }
+      console.log("testing hereeeee", this.grid);
+    },
+  },
+  mounted() {
+    onSnapshot(collection(db, "Task"), (querySnapshot) => {
+      querySnapshot.forEach((task) => {
+        this.events.push(task.data());
+      });
+      this.markBusyCells();
+    });
   },
 };
 </script>
@@ -55,9 +90,18 @@ export default {
           ⏳ {{ getTimeForRow(rowIndex) }}
         </v-sheet>
       </v-col>
-      <v-col class="pa-0" v-for="n in 7" :key="n">
+
+      <v-col class="pa-0" v-for="(dayIndex, day) in daysOfWeek" :key="dayIndex">
         <v-sheet class="d-flex justify-center align-center" :height="40">
-          <p>🆓</p>
+          <!-- Check if there is an event on the specific day and time -->
+          <template v-if="hasEvent(day, rowIndex)">
+            <!-- Display the event representation -->
+            <p>Event!</p>
+          </template>
+          <template v-else>
+            <!-- If no event, display empty -->
+            <p>🆓</p>
+          </template>
         </v-sheet>
       </v-col>
     </v-row>

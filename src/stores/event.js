@@ -13,15 +13,11 @@ export const useEventStore = defineStore("eventStore", {
         { name: "Academic", color: "#BC8F8F" },
         { name: "Task", color: "#FFD8B1" },
       ],
-      events: [],
     };
   },
   getters: {
     getEventTypes(state) {
       return state.eventTypes;
-    },
-    getEvents(state) {
-      return state.events;
     },
   },
 });

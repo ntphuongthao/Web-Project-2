@@ -1,13 +1,12 @@
 <script>
-import { mapState } from "pinia";
-import { useEventStore } from "../stores/event.js";
-import { collection, addDoc } from "firebase/firestore"; 
-import db from "../../Firebase/init.js"
+import { collection, addDoc } from "firebase/firestore";
+import db from "../../firebase/init.js";
 
 export default {
   data() {
     return {
-      eventName: "",
+      eventDay: null,
+      eventName: null,
       events: [
         {
           name: "Birthday",
@@ -56,10 +55,11 @@ export default {
   methods: {
     async submitForm() {
       const eventData = {
+        eventDay: this.eventDay,
         eventName: this.eventName,
         eventTime: this.range,
-        events: this.events.filter(event => event.selected)
-      }
+        events: this.events.filter((event) => event.selected),
+      };
       try {
         const docRef = await addDoc(collection(db, "Task"), eventData);
         this.resetForm();
@@ -67,12 +67,13 @@ export default {
         console.error("Error adding documents: ", error);
       }
     },
-    resetForm(){
-      this.eventName = "";
+    resetForm() {
+      this.eventDay = null;
+      this.eventName = null;
       this.eventTime = [0, 24];
-      this.events.forEach(event => (event.selected = false));
-    }
-  }
+      this.events.forEach((event) => (event.selected = false));
+    },
+  },
 };
 </script>
 
@@ -82,14 +83,27 @@ export default {
     <v-sheet rounded width="500" class="mx-auto transparent-sheet">
       <v-form @submit.prevent="submitForm">
         <v-text-field v-model="eventName" label="Event name"></v-text-field>
-
+        <v-select
+          v-model="eventDay"
+          label="Select Week day"
+          :items="[
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday',
+          ]"
+        ></v-select>
+        <p>Choose your time:</p>
         <v-range-slider
           v-model="range"
           :max="24"
           :min="0"
           :step="2"
           hide-details
-          class="align-center"
+          class="align-center mt-2"
         >
           <template v-slot:prepend>
             <v-text-field
@@ -115,7 +129,7 @@ export default {
           </template>
         </v-range-slider>
 
-        <v-row>
+        <v-row class="mt-3">
           <v-col
             v-for="(event, index) in events"
             :key="event"
