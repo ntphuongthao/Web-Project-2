@@ -51,6 +51,7 @@ export default {
       ],
       range: [0, 24],
       events: [],
+      isImportant: false,
     };
   },
   methods: {
@@ -60,6 +61,7 @@ export default {
         eventName: this.eventName,
         eventTime: this.range,
         events: this.eventTypes.filter((event) => event.selected),
+        isImportant: this.isImportant,
       };
 
       const [eventStartTime, eventEndTime] = this.range; // [a, b]
@@ -95,6 +97,7 @@ export default {
       this.eventDay = null;
       this.eventName = null;
       this.range = [0, 24];
+      this.isImportant = false;
       this.eventTypes.forEach((event) => (event.selected = false));
     },
   },
@@ -109,8 +112,8 @@ export default {
 </script>
 
 <template>
-  <h1>Create a new Task</h1>
-  <v-sheet rounded class="pa-6 ma-4" width="600">
+  <v-sheet rounded class="pa-6 ma-2" width="600">
+    <h2 :style="{ textAlign: 'center' }">Create a new Task</h2>
     <v-sheet rounded width="500" class="mx-auto transparent-sheet">
       <v-form @submit.prevent="submitForm">
         <v-text-field v-model="eventName" label="Event name"></v-text-field>
@@ -127,14 +130,14 @@ export default {
             'Sunday',
           ]"
         ></v-select>
-        <p>Choose your time:</p>
+        <p>Event Time:</p>
         <v-range-slider
           v-model="range"
           :max="24"
           :min="0"
           :step="2"
           hide-details
-          class="align-center mt-2"
+          class="align-center mt-2 mb-4"
         >
           <template v-slot:prepend>
             <v-text-field
@@ -160,7 +163,7 @@ export default {
           </template>
         </v-range-slider>
 
-        <v-row class="mt-3">
+        <v-row class="ma-3 addBorder">
           <v-col
             v-for="(eventType, index) in eventTypes"
             :key="eventType"
@@ -176,6 +179,12 @@ export default {
             ></v-checkbox>
           </v-col>
         </v-row>
+        <v-switch
+          v-model="isImportant"
+          color="red-darken-3"
+          label="Important"
+          inset
+        ></v-switch>
 
         <v-sheet rounded width="100" class="mx-auto transparent-sheet">
           <v-btn variant="outlined" type="submit" block class="mt-2">
@@ -190,5 +199,10 @@ export default {
 <style scoped>
 .transparent-sheet {
   background-color: transparent !important;
+}
+
+.addBorder {
+  border: 1px solid #808080;
+  border-radius: 0.5rem;
 }
 </style>

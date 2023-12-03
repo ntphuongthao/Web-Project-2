@@ -4,7 +4,10 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <v-container fluid class="flex-column bg-surface-variant fill-height">
+  <v-container
+    fluid
+    class="flex-column bg-surface-variant fill-height flex-nowrap"
+  >
     <RouterView />
     <NavigationBar />
   </v-container>

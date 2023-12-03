@@ -20,6 +20,7 @@ export default {
         Array.from({ length: 8 }, () => null)
       ),
       startCells: [],
+      endCells: [],
     };
   },
   methods: {
@@ -52,6 +53,14 @@ export default {
       );
       return isInArray;
     },
+    isEndCell(day, rowIndex) {
+      let days = this.daysOfWeek.slice(1);
+      const searchCell = [days[day], rowIndex];
+      const isInArray = this.endCells.some(
+        (item) => JSON.stringify(item) === JSON.stringify(searchCell)
+      );
+      return isInArray;
+    },
     async deleteEvent(day, rowIndex) {
       await deleteDoc(doc(db, "Task", this.grid[rowIndex][day].id));
       location.reload();
@@ -67,6 +76,8 @@ export default {
         let dayIndex = days.indexOf(eventDay);
 
         this.startCells.push([eventDay, startTime]);
+        this.endCells.push([eventDay, endTime]);
+
         // Mark cells as busy
         for (let i = startTime; i <= endTime; i++) {
           this.grid[i][dayIndex] = event;
@@ -93,6 +104,10 @@ export default {
           class="d-flex justify-center align-center"
           color="green-lighten-3"
           :height="36"
+          :class="{
+            fixBorderTopLeft: day === '',
+            fixBorderTopRight: day === 'Sunday',
+          }"
         >
           <p class="font-weight-black">{{ day }}</p>
         </v-sheet>
@@ -104,26 +119,37 @@ export default {
       v-for="rowIndex in 12"
       :key="rowIndex"
       align="center"
+      :class="{ 'mt-1': rowIndex === 1 }"
     >
       <v-col class="pa-0">
         <v-sheet
           class="d-flex justify-center align-center font-weight-bold"
           color="grey-lighten-3"
           :height="36"
+          :class="{
+            fixBorderBottomLeft: rowIndex === 12,
+          }"
         >
           ⏳ {{ getTimeForRow(rowIndex) }}
         </v-sheet>
       </v-col>
 
       <v-col
-        class="pa-0"
+        class="pa-0 ml-1"
         v-for="(dayIndex, day) in daysOfWeek.slice(1)"
         :key="dayIndex"
+        :class="{
+          fixBorderBottomRight: rowIndex === 12,
+        }"
       >
         <v-sheet
           v-if="hasEvent(day, rowIndex)"
           :color="getEventColor(day, rowIndex)"
           :height="36"
+          :class="{
+            startCell: this.isStartCell(day, rowIndex),
+            endCell: this.isEndCell(day, rowIndex),
+          }"
         >
           <p class="eventName d-flex justify-center align-center">
             <span
@@ -147,12 +173,39 @@ export default {
 .container {
   margin: 2rem;
   margin-top: 1rem;
+  border: 1px solid #808080;
+  border-radius: 0.5rem;
+}
+
+.fixBorderTopLeft {
+  border-top-left-radius: 0.5rem;
+}
+
+.fixBorderTopRight {
+  border-top-right-radius: 0.5rem;
+}
+.fixBorderBottomLeft {
+  border-bottom-left-radius: 0.5rem;
+}
+
+.fixBorderbottomRight {
+  border-bottom-right-radius: 0.5rem;
 }
 
 .eventName {
   font-size: 12px;
   height: 100%;
   position: relative;
+}
+
+.startCell {
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.endCell {
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
 }
 
 .cross {
