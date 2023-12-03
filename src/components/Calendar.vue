@@ -39,14 +39,14 @@ export default {
     getEventColor(day, rowIndex) {
       const eventList = this.grid[rowIndex][day].events;
       if (eventList.length === 0) {
-        return "fff";
+        return "grey";
       } else {
         return eventList[0].color;
       }
     },
     isStartCell(day, rowIndex) {
       let days = this.daysOfWeek.slice(1);
-      const searchCell = [days[day], rowIndex - 1];
+      const searchCell = [days[day], rowIndex];
       const isInArray = this.startCells.some(
         (item) => JSON.stringify(item) === JSON.stringify(searchCell)
       );
@@ -59,9 +59,9 @@ export default {
     markBusyCells() {
       for (let event of this.events) {
         const { eventTime, eventDay } = event;
-        const startTime = Math.floor(eventTime[0] / 2);
+        const startTime = Math.floor(eventTime[0] / 2) + 1;
         const endTime = Math.floor(eventTime[1] / 2);
-
+        console.log(startTime, endTime);
         // Map day to its index (Monday=0, Tuesday=1, ..., Sunday=6)
         let days = this.daysOfWeek.slice(1);
         let dayIndex = days.indexOf(eventDay);
@@ -116,7 +116,7 @@ export default {
       </v-col>
 
       <v-col
-        class="pa-0"
+        class="pa-0 ml-2"
         v-for="(dayIndex, day) in daysOfWeek.slice(1)"
         :key="dayIndex"
       >

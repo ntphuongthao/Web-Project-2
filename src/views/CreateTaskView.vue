@@ -71,7 +71,7 @@ export default {
     resetForm() {
       this.eventDay = null;
       this.eventName = null;
-      this.eventTime = [0, 24];
+      this.range = [0, 24];
       this.events.forEach((event) => (event.selected = false));
     },
   },
