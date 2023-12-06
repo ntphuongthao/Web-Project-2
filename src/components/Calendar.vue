@@ -5,9 +5,9 @@ import { collection, doc, onSnapshot, deleteDoc } from "firebase/firestore";
 export default {
   data() {
     return {
-      events: [],
+      events: [], // Array to store events
       daysOfWeek: [
-        "",
+        "", // Empty string for formatting purposes
         "Monday",
         "Tuesday",
         "Wednesday",
@@ -15,12 +15,12 @@ export default {
         "Friday",
         "Saturday",
         "Sunday",
-      ],
+      ], // Array of days of the week
       grid: Array.from({ length: 13 }, () =>
         Array.from({ length: 8 }, () => null)
-      ),
-      startCells: [],
-      endCells: [],
+      ), // 2D array representing a weekly schedule grid
+      startCells: [], // Array to store start cells of events in the grid
+      endCells: [], // Array to store end cells of events in the grid
     };
   },
   methods: {
@@ -31,12 +31,18 @@ export default {
       const endHour = String(hour + 2).padStart(2, "0");
       return `${startHour}:00 => ${endHour}:00`;
     },
+
+    // Checking if an event exists on a specific day and row index in the grid
     hasEvent(day, rowIndex) {
       return this.grid[rowIndex][day] !== null;
     },
+
+    // Getting the name of the event for a specific day and row index in the grid
     getEventName(day, rowIndex) {
       return this.grid[rowIndex][day].eventName;
     },
+
+    // Getting the color of the event for a specific day and row index
     getEventColor(day, rowIndex) {
       const eventList = this.grid[rowIndex][day].events;
       if (eventList.length === 0) {
@@ -45,6 +51,8 @@ export default {
         return eventList[0].color;
       }
     },
+
+    // Checking if a cell is the start cell of an event
     isStartCell(day, rowIndex) {
       let days = this.daysOfWeek.slice(1);
       const searchCell = [days[day], rowIndex];
@@ -53,6 +61,8 @@ export default {
       );
       return isInArray;
     },
+
+    // Checking if a cell is the end cell of an event
     isEndCell(day, rowIndex) {
       let days = this.daysOfWeek.slice(1);
       const searchCell = [days[day], rowIndex];
@@ -61,13 +71,19 @@ export default {
       );
       return isInArray;
     },
+
+    // Asynchronous function to delete an event from the firestore
     async deleteEvent(day, rowIndex) {
       await deleteDoc(doc(db, "Task", this.grid[rowIndex][day].id));
       location.reload();
     },
+
+    // Checking if an event is marked as important for a specific day and row index
     isImportantEvent(day, rowIndex) {
       return this.grid[rowIndex][day].isImportant;
     },
+
+    // Marking cells in the grid as busy based on the events' time slots
     markBusyCells() {
       for (let event of this.events) {
         const { eventTime, eventDay } = event;
@@ -89,6 +105,7 @@ export default {
     },
   },
   mounted() {
+    // Retrieving event data from Firestore and populating the 'events' array
     onSnapshot(collection(db, "Task"), (querySnapshot) => {
       querySnapshot.forEach((task) => {
         this.events.push({ id: task.id, ...task.data() });
